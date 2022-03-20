@@ -1,8 +1,10 @@
 import React, { useRef } from "react";
 import styled from "styled-components";
-import { Form, Input, Button } from "antd";
+import { Form, Input, Button, message } from "antd";
 import Link from "next/link";
 import { Flip, Fade } from "react-reveal";
+import axios from "axios";
+import Router from "next/router";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -32,8 +34,24 @@ const WriteTextArea = styled(Input.TextArea)`
 const Write = () => {
   const writeFormRef = useRef();
 
-  const finishAction = (value) => {
-    console.log(value);
+  const finishAction = async (value) => {
+    const sendData = {
+      _title: value.title,
+      _content: value.content,
+      _author: value.author,
+    };
+
+    const response = await axios.post(
+      "http://localhost:4000/api/board/write",
+      sendData
+    );
+
+    if (response.data.result) {
+      Router.push("/");
+      message.success("게시글이 등록되었습니다.");
+    } else {
+      message.error("게시글 등록에 실패했습니다.");
+    }
   };
 
   return (
